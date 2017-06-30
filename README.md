@@ -11,6 +11,8 @@ LoaderManager;
 AsyncTaskLoader;
 Custom Class;
 Custom ArrayAdapter;
+ViewHolder; (added);
+@BindView & ButterKnife in ArrayAdapter (added);
 Custom JSON parse method;
 StringBuilder;
 InputStreamReader && BufferedReader;
