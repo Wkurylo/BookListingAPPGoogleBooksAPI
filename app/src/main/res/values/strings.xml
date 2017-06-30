@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">BookListingAPPGoogleBooksAPI</string>
+
+    <string name="search_query">Search Book</string>
+    <string name="search_button">Search</string>
+    <string name="no_internet">Check Your internet connection</string>
+    <string name="no_books">No Books associated with query. Sorry :( </string>
+
+</resources>
