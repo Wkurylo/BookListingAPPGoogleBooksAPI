@@ -63,6 +63,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     private TextView mEmptyStateTextView;
 
+    /**
+     * ConnectivityManager to check internet connection while clicking Search button
+     */
+    private ConnectivityManager cm;
+
+    private boolean checkIfVisable = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,10 +89,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // so the list can be populated in the user interface
         booksListView.setAdapter(mAdapter);
 
-        // Checking the internet connection
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        // Initialization of ConnectivityManager to check internet connection while clicking Search button
+        cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // ID to progress bar
         mLoadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
@@ -104,15 +109,24 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onClick(View v) {
 
-
                 // checking the User input in UI and casting to String data type Object
                 mUserInput = mSearchView.getQuery().toString().toLowerCase();
                 updateUrlRequest(mUserInput);
                 Log.v("Main Activity", "result:" + GOOGLE_BOOKS_QUERY_URL);
                 mLoadingSpinner.setVisibility(View.VISIBLE);
 
+                // Checking the internet connection
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
                 // If there is internet connection do the following
                 if (isConnected) {
+
+                    if(checkIfVisable){
+                        mNoInternet.setVisibility(View.GONE);
+                        checkIfVisable = false;
+                    }
+
                     // Get a reference to the LoaderManager, in order to interact with loaders.
                     LoaderManager loaderManager = getSupportLoaderManager();
 
@@ -122,12 +136,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     loaderManager.restartLoader(BOOK_LOADER_ID, null, MainActivity.this);
                 }
                 // If there is NO internet connection do the following
-                else if (!isConnected) {
+                else {
                     // Do not need the progress loading bar - set GONE
                     //Display info - no internet
                     mNoInternet = (TextView) findViewById(R.id.no_internet);
                     mNoInternet.setText(R.string.no_internet);
+                    checkIfVisable = true;
                     mLoadingSpinner.setVisibility(View.GONE);
+                    mAdapter.clear();
 
                 }
             }
@@ -168,19 +184,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<List<Book>> loader, List<Book> bookNewList) {
         mLoadingSpinner.setVisibility(View.GONE);
 
-        if (bookNewList == null) {
+//        if (bookNewList == null) {
             // Set empty state text to display "No earthquakes found."
             String noEarthQu = new String(getString(R.string.no_books));
             mEmptyStateTextView.setText(noEarthQu.toUpperCase());
-            return;
-        }
+//            return;
+//        }
 
         // Clear the adapter of previous earthquake list
         mAdapter.clear();
 
         //If there is a valid list of {@link Earthquake}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
-        if (bookNewList != null && !bookNewList.isEmpty()) {
+        if (!bookNewList.isEmpty()) {
             mAdapter.addAll(bookNewList);
         }
     }

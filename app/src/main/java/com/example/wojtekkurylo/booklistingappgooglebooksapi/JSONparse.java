@@ -60,6 +60,15 @@ public class JSONparse {
 
                 // access the Authors Object for i-th book
                 JSONArray authorsInfo = volumeInfo.getJSONArray("authors");
+                if(volumeInfo.has("authors")){
+                    // access the method to build String from Array
+                    updateAuthorsString(authorsInfo);
+                } else{
+
+                    int placeholder = R.string.no_author;
+                    mAuthor = Integer.toString(placeholder);
+                }
+
 
                 // access the method to build String from Array
                 updateAuthorsString(authorsInfo);
