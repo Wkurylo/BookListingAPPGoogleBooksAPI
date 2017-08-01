@@ -50,10 +50,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     private String GOOGLE_BOOKS_QUERY_URL = null;
     /**
-     * Variable to check network connection
-     */
-    private boolean isConnected = false;
-    /**
      * Adapter for the list of Books
      */
     private BookAdapter mAdapter;
@@ -117,12 +113,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 // Checking the internet connection
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+                boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
                 // If there is internet connection do the following
                 if (isConnected) {
 
-                    if(checkIfVisable){
+                    if (checkIfVisable) {
                         mNoInternet.setVisibility(View.GONE);
                         checkIfVisable = false;
                     }
@@ -134,17 +130,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
                     // because this activity implements the LoaderCallbacks interface).
                     loaderManager.restartLoader(BOOK_LOADER_ID, null, MainActivity.this);
-                }
-                // If there is NO internet connection do the following
-                else {
+                    // If there is NO internet connection do the following
+                }else {
                     // Do not need the progress loading bar - set GONE
                     //Display info - no internet
                     mNoInternet = (TextView) findViewById(R.id.no_internet);
                     mNoInternet.setText(R.string.no_internet);
-                    checkIfVisable = true;
+                    if (!checkIfVisable){
+                        mNoInternet.setVisibility(View.VISIBLE);
+                        checkIfVisable = true;
+                    }
                     mLoadingSpinner.setVisibility(View.GONE);
                     mAdapter.clear();
-
                 }
             }
         });
@@ -184,12 +181,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<List<Book>> loader, List<Book> bookNewList) {
         mLoadingSpinner.setVisibility(View.GONE);
 
-//        if (bookNewList == null) {
-            // Set empty state text to display "No earthquakes found."
-            String noEarthQu = new String(getString(R.string.no_books));
-            mEmptyStateTextView.setText(noEarthQu.toUpperCase());
-//            return;
-//        }
+//        String noEarthQu = new String(getString(R.string.no_books));
+//        mEmptyStateTextView.setText(noEarthQu.toUpperCase());
 
         // Clear the adapter of previous earthquake list
         mAdapter.clear();
@@ -198,6 +191,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // data set. This will trigger the ListView to update.
         if (!bookNewList.isEmpty()) {
             mAdapter.addAll(bookNewList);
+        } else {
+            String noEarthQu = new String(getString(R.string.no_books));
+            mEmptyStateTextView.setText(noEarthQu.toUpperCase());
         }
     }
 

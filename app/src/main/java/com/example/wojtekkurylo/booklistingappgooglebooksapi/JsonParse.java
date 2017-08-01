@@ -17,16 +17,18 @@ import java.util.List;
 /**
  * Helper methods related to receive book data from Google Books Server and creating ArrayList.
  */
-public class JSONparse {
+public final class JsonParse {
 
     private static String mAuthor = "";
 
     /**
-     * Create a private constructor because no one should ever create a {@link JSONparse} object.
+     * Create a private constructor because no one should ever create a {@link JsonParse} object.
      * This class is only meant to hold static variables and methods, which can be accessed
-     * directly from the class name JSONparse (and an object instance of JSONparse is not needed).
+     * directly from the class name JsonParse (and an object instance of JsonParse is not needed).
      */
-    private JSONparse() {
+    private JsonParse() {
+        // Suppress default constructor for noninstantiability
+        throw new AssertionError("No JsonParse instances for you!");
     }
 
     public static List<Book> extractAndParseJsonResponse(String jsonResponse) {
@@ -58,20 +60,17 @@ public class JSONparse {
                 // Extract the value for the key called "title"
                 String title = volumeInfo.getString("title");
 
-                // access the Authors Object for i-th book
-                JSONArray authorsInfo = volumeInfo.getJSONArray("authors");
-                if(volumeInfo.has("authors")){
+                if(volumeInfo.has("authors")) {
+                    // access the Authors Object for i-th book
+                    JSONArray authorsInfo = volumeInfo.getJSONArray("authors");
+
                     // access the method to build String from Array
                     updateAuthorsString(authorsInfo);
+                    
                 } else{
-
                     int placeholder = R.string.no_author;
                     mAuthor = Integer.toString(placeholder);
                 }
-
-
-                // access the method to build String from Array
-                updateAuthorsString(authorsInfo);
 
                 // Create Book Object with title and author
                 Book book = new Book(title, mAuthor);
@@ -83,7 +82,7 @@ public class JSONparse {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception
-            Log.e("JSONparse", "Problem parsing the book JSON results", e);
+            Log.e("JsonParse", "Problem parsing the book JSON results", e);
         }
         return booksArray;
     }
@@ -110,7 +109,7 @@ public class JSONparse {
                     output.append(NEW_LINE + authorsInfo.getString(i));
                 }
             } catch (JSONException e) {
-                Log.e("JSONparse", "Error in updateAuthorsString", e);
+                Log.e("JsonParse", "Error in updateAuthorsString", e);
             }
         }
         mAuthor = output.toString();

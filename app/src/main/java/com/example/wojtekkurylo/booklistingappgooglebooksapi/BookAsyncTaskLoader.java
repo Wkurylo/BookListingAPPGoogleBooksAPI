@@ -65,7 +65,7 @@ public class BookAsyncTaskLoader extends AsyncTaskLoader<List<Book>> {
             Log.e("BookAsyncTaskLoader", "Error with makeHttpRequest in loadInBackground", e);
         }
 
-        List<Book> bookNewList = JSONparse.extractAndParseJsonResponse(jsonResponse);
+        List<Book> bookNewList = JsonParse.extractAndParseJsonResponse(jsonResponse);
         return bookNewList;
     }
 
